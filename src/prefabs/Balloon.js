@@ -1,15 +1,17 @@
 class Balloon extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, texture, frame) {
-      super(scene, x, y, texture, frame);
+      super(scene, x, y, texture, 0);
   
       // add object to existing scene
       scene.add.existing(this);
       this.scene = scene;
       this.moveSpeed = 5;
+      this.anims.play('sway');
 
     }
 
     update(scene) {
+        
         
         // Movement UP and DOWN
         if(keyUP.isDown) {

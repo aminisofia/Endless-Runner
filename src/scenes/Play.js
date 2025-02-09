@@ -6,6 +6,7 @@ class Play extends Phaser.Scene {
 
     preload() {
 
+        this.load.image('noise', './aesprite/noisebg4.png');
         this.load.image('balloon', './aesprite/balloon.png');
         this.load.image('background', './aesprite/background.png')
         this.load.image('cow', './aesprite/cow.png')
@@ -14,12 +15,24 @@ class Play extends Phaser.Scene {
         this.load.image('smallLeaf', './aesprite/smallLeaf.png')
         this.load.image('bigLeaf', './aesprite/bigLeaf.png')
         this.load.image('particleLight', './aesprite/particleLight.png')
+        this.load.image('house', './aesprite/house.png');
+        this.load.font('gamer', './fonts/Retro_Gaming.ttf');
 
 
 
+        // SFXs
         this.load.audio('moo', './sfx/cow.wav')
         this.load.audio('crash', './sfx/crash.mp3')
+        this.load.audio('bg', './sfx/bg.mp3')
 
+
+         // load spritesheet
+         this.load.spritesheet('balloonSway', './aesprite/balloon-Sheet.png', {
+            frameWidth: 21,
+            frameHeight: 34,
+            startFrame: 0,
+            endFrame: 1
+        })
 
 
     }
@@ -27,11 +40,28 @@ class Play extends Phaser.Scene {
     create() {
         
 
+        this.anims.create({
+            key: 'sway',
+            frames: this.anims.generateFrameNumbers('balloonSway', { start: 0, end: 1, first: 0}),
+            frameRate: 2,
+            repeat: -1,
+            delay: 100
+        })
+
+        this.backgroundSpeed = 50;
         this.background = this.add.tileSprite(0, 0, this.sys.game.canvas.width, this.sys.game.canvas.height, 'background').setOrigin(0, 0);
-        this.balloon = new Balloon(this, 80, 50, 'balloon').setOrigin(0, 0).setScale(4);
+        this.noise = this.add.tileSprite(0, 0, this.sys.game.canvas.width, this.sys.game.canvas.height, 'noise').setOrigin(0, 0).setAlpha(.5).setScale(5);
         
+        // bg music
+        this.bg = this.sound.add('bg');
+        this.bg.setLoop(true);
+        this.bg.play();
+
+        this.balloon = new Balloon(this, 80, 50, 'balloonSway').setOrigin(0, 0).setScale(4);
         this.obstacles = [
-            new Obstacle(this, 640, 50, 'cow', 'moo').setOrigin(0.5, 0.5).setScale(4),
+            new Obstacle(this, 640, 50, 'cow', 'moo', 10, 2).setOrigin(0.5, 0.5).setScale(4),
+            new Obstacle(this, 640, 50, 'house', null, 3, 10).setOrigin(0.5, 0.5).setScale(6),
+
         ]
 
 
@@ -43,18 +73,18 @@ class Play extends Phaser.Scene {
         this.p1Score = 0;
         // display score
         let scoreConfig = {
-            fontFamily: 'Courier',
+            fontFamily: 'gamer',
             fontSize: '35px',
-            backgroundColor: '#ffdaf4',
-            color: '#843605',
-            align: 'right',
+            backgroundColor: '#dbc7cd',
+            color: '#45444f',
+            align: 'center',
             padding: {
                 top: 5,
                 bottom: 5,
             },
-            fixedWidth: 100
+            fixedWidth: 50
         }
-        this.scoreLeft = this.add.text(borderUISize, borderUISize + 10, this.p1Score, scoreConfig)
+        this.scoreLeft = this.add.text(borderUISize, borderUISize, this.p1Score, scoreConfig)
         scoreConfig.fixedWidth = 0
 
 
@@ -79,7 +109,10 @@ class Play extends Phaser.Scene {
     }
 
     update() {
-        this.background.tilePositionX += 25;
+        this.background.tilePositionX += this.backgroundSpeed;
+        this.noise.tilePositionX += this.backgroundSpeed;
+        this.backgroundSpeed += .005;
+
         this.balloon.update(this);
 
         for(let obstacle of this.obstacles) {
@@ -134,7 +167,6 @@ class Play extends Phaser.Scene {
         }
 
         // Leaves and their rotation
-
         if (Math.random() < 0.02) {
             this.trail3.explode(1, this.sys.game.canvas.width, Phaser.Math.Between(0, this.sys.game.canvas.height));
         }
