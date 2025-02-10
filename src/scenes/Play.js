@@ -10,6 +10,8 @@ class Play extends Phaser.Scene {
         this.load.image('balloon', './aesprite/balloon.png');
         this.load.image('background', './aesprite/background.png')
         this.load.image('cow', './aesprite/cow.png')
+        this.load.image('bra', './aesprite/bra.png')
+
         this.load.image('particle', './aesprite/particle.png')
         this.load.image('particle2', './aesprite/particle2.png')
         this.load.image('smallLeaf', './aesprite/smallLeaf.png')
@@ -61,13 +63,13 @@ class Play extends Phaser.Scene {
         this.obstacles = [
             new Obstacle(this, 640, 50, 'cow', 'moo', 10, 2).setOrigin(0.5, 0.5).setScale(4),
             new Obstacle(this, 640, 50, 'house', null, 3, 10).setOrigin(0.5, 0.5).setScale(6),
+            new Obstacle(this, 640, 50, 'bra', null, 10, 15).setOrigin(0.5, 0.5).setScale(4),
 
         ]
 
 
         keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-        keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
         
         
         this.p1Score = 0;
@@ -75,7 +77,7 @@ class Play extends Phaser.Scene {
         let scoreConfig = {
             fontFamily: 'gamer',
             fontSize: '35px',
-            backgroundColor: '#dbc7cd',
+            backgroundColor: '#e8b9e5',
             color: '#45444f',
             align: 'center',
             padding: {
@@ -190,7 +192,7 @@ class Play extends Phaser.Scene {
             balloon.x + (balloon.width * balloon.scale) > obstacle.x && 
             balloon.y < obstacle.y + (obstacle.height * obstacle.scale) &&
             (balloon.height * balloon.scale) + balloon.y > obstacle. y) {
-            return true;
+            return true;    
         } else {
             return false;
         }
