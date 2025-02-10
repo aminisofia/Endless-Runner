@@ -4,6 +4,8 @@ class Menu extends Phaser.Scene {
     }
 
     preload() {
+        this.load.audio('select', './sfx/select.mp3')
+
         this.load.spritesheet('title', './aesprite/titleScreen-Sheet.png', {
             frameWidth: 381,
             frameHeight: 272,
@@ -13,6 +15,8 @@ class Menu extends Phaser.Scene {
     }
 
     create() {
+        this.select = this.sound.add('select');
+
         this.anims.create({
             key: 'title',
             frames: this.anims.generateFrameNumbers('title', { start: 0, end: 1, first: 0}),
@@ -31,9 +35,11 @@ class Menu extends Phaser.Scene {
 
     update() {
         if (Phaser.Input.Keyboard.JustDown(this.keySPACE)) {
+            this.select.play();
             this.scene.start('playScene');
         }
         if (Phaser.Input.Keyboard.JustDown(this.keyLEFT)) {
+            this.select.play();
             this.scene.start('creditsScene');
         }
     }
