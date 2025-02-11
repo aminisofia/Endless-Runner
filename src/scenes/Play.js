@@ -27,9 +27,9 @@ class Play extends Phaser.Scene {
 
         this.balloon = new Balloon(this, 80, 50, 'balloonSway').setOrigin(0.5, 0.5).setScale(4);
         this.obstacles = [
-            new Obstacle(this, 640, 50, 'cow', 'moo', 10, 2).setOrigin(0.5, 0.5).setScale(4),
-            new Obstacle(this, 640, 50, 'house', null, 3, 10).setOrigin(0.5, 0.5).setScale(6),
-            new Obstacle(this, 640, 50, 'bra', null, 10, 15).setOrigin(0.5, 0.5).setScale(4),
+            new Obstacle(this, -640, 50, 'cow', 'moo', 10, 2).setOrigin(0.5, 0.5).setScale(4),
+            new Obstacle(this, -640, 50, 'house', null, 3, 10).setOrigin(0.5, 0.5).setScale(6),
+            new Obstacle(this, -640, 50, 'bra', null, 10, 15).setOrigin(0.5, 0.5).setScale(4),
 
         ]
 
