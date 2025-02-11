@@ -10,7 +10,7 @@ config = {
     type: Phaser.AUTO,
     width: 640 * 1.2,
     height: 480 * 1.2,
-    scene: [Menu, Credits, End, Play],
+    scene: [Menu, Credits, Play],
     pixelArt: true,
 }
 

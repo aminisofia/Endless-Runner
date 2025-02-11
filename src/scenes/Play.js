@@ -5,6 +5,9 @@ class Play extends Phaser.Scene {
     }
 
     preload() {
+        this.load.image('end', './aesprite/gameOver.png');
+        this.load.image('balloonDeath', './aesprite/balloonDeath.png')
+        this.load.image('fire', './aesprite/fire.png');
 
         this.load.image('noise', './aesprite/noisebg4.png');
         this.load.image('balloon', './aesprite/balloon.png');
@@ -23,6 +26,7 @@ class Play extends Phaser.Scene {
 
 
         // SFXs
+        this.load.audio('select', './sfx/select.mp3')
         this.load.audio('moo', './sfx/cow.wav')
         this.load.audio('crash', './sfx/crash.mp3')
         this.load.audio('bg', './sfx/bg.mp3')
@@ -41,7 +45,7 @@ class Play extends Phaser.Scene {
 
     create() {
         
-
+        this.select = this.sound.add('select');
         this.anims.create({
             key: 'sway',
             frames: this.anims.generateFrameNumbers('balloonSway', { start: 0, end: 1, first: 0}),
@@ -53,13 +57,15 @@ class Play extends Phaser.Scene {
         this.backgroundSpeed = 50;
         this.background = this.add.tileSprite(0, 0, this.sys.game.canvas.width, this.sys.game.canvas.height, 'background').setOrigin(0, 0);
         this.noise = this.add.tileSprite(0, 0, this.sys.game.canvas.width, this.sys.game.canvas.height, 'noise').setOrigin(0, 0).setAlpha(.5).setScale(5);
-        
+        this.end = this.add.tileSprite(0, 0, this.sys.game.canvas.width, this.sys.game.canvas.height, 'end').setOrigin(0, 0).setAlpha(0);
+        // this.balloonDeath = new Balloon(this, 80, 50, null).setOrigin(0, 0).setScale(4).setAlpha(0);
+
         // bg music
         this.bg = this.sound.add('bg');
         this.bg.setLoop(true);
         this.bg.play();
 
-        this.balloon = new Balloon(this, 80, 50, 'balloonSway').setOrigin(0, 0).setScale(4);
+        this.balloon = new Balloon(this, 80, 50, 'balloonSway').setOrigin(0.5, 0.5).setScale(4);
         this.obstacles = [
             new Obstacle(this, 640, 50, 'cow', 'moo', 10, 2).setOrigin(0.5, 0.5).setScale(4),
             new Obstacle(this, 640, 50, 'house', null, 3, 10).setOrigin(0.5, 0.5).setScale(6),
@@ -67,11 +73,11 @@ class Play extends Phaser.Scene {
 
         ]
 
-
+        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         
-        
+        this.gameOver = 0;
         this.p1Score = 0;
         // display score
         let scoreConfig = {
@@ -84,7 +90,7 @@ class Play extends Phaser.Scene {
                 top: 5,
                 bottom: 5,
             },
-            fixedWidth: 50
+            fixedWidth: 55
         }
         this.scoreLeft = this.add.text(borderUISize, borderUISize, this.p1Score, scoreConfig)
         scoreConfig.fixedWidth = 0
@@ -111,11 +117,51 @@ class Play extends Phaser.Scene {
     }
 
     update() {
-        this.background.tilePositionX += this.backgroundSpeed;
-        this.noise.tilePositionX += this.backgroundSpeed;
-        this.backgroundSpeed += .005;
+
+        if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
+            this.select.play();
+            this.bg.stop();
+            this.scene.start('menuScene');
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(keyRESET)) {
+            this.select.play();
+            this.bg.stop();
+            this.scene.start('playScene');
+        }
+
+        if (this.backgroundSpeed < 60) {
+            this.background.tilePositionX += this.backgroundSpeed;
+            this.noise.tilePositionX += this.backgroundSpeed;
+            this.backgroundSpeed += .005;
+        }
 
         this.balloon.update(this);
+
+        if(this.gameOver >= 2) {
+            this.end.alpha = 1;
+            this.bg.stop();
+            this.balloon.setTexture('balloonDeath');     
+
+            // particle effect explode
+            const emitter = this.add.particles(0, 0, 'fire', {
+                lifespan: { min: 600, max: 800 },
+                speed: { min: 50, max: 100 },
+                // angle: { min: -30, max: 30 },
+                scale: { start: 2, end: 1 },
+                alpha: { start: 1, end: 0 },
+                blendMode: 'ADD',
+                frequency: 50,
+                gravityY: -50,
+                quantity: 2,
+                rotate: { min: -180, max: 180 },
+                tint: [ 0xff7f00, 0xff5500, 0xff3300, 0xff0000 ],
+            });
+            
+            emitter.startFollow(this.balloon, 0, -25);
+            
+            
+        } 
 
         for(let obstacle of this.obstacles) {
             obstacle.update(this);
@@ -129,6 +175,7 @@ class Play extends Phaser.Scene {
 
             if (obstacle.canHurt && this.checkCollision(this.balloon, obstacle)) {
                 this.p1Score -= 1;
+                this.gameOver += 1;
                 this.sound.play('crash')
                 this.scoreLeft.text = this.p1Score;    
                 obstacle.canHurt = false;
@@ -188,10 +235,10 @@ class Play extends Phaser.Scene {
 
     checkCollision(balloon, obstacle) {
         // simple AABB checking
-        if (balloon.x < obstacle.x + (obstacle.width * obstacle.scale)&& 
-            balloon.x + (balloon.width * balloon.scale) > obstacle.x && 
-            balloon.y < obstacle.y + (obstacle.height * obstacle.scale) &&
-            (balloon.height * balloon.scale) + balloon.y > obstacle. y) {
+        const a = balloon.x - obstacle.x;
+        const b = obstacle.y - balloon.y;
+        const distance = Math.sqrt(a*a + b*b);
+        if (distance <= (balloon.width/2 * balloon.scale + obstacle.width /2 * obstacle.scale)) {
             return true;    
         } else {
             return false;
