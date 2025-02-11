@@ -12,13 +12,12 @@ class Balloon extends Phaser.GameObjects.Sprite {
 
     update(scene, delta) {
         
-        // const deltaSeconds = delta / 1000;
 
         // Movement UP and DOWN
         if(keyUP.isDown && this.scene.gameOver < 2) {
-            this.y -= this.moveSpeed * 1.2;
+            this.y -= this.moveSpeed * 1.2 * delta;
         } else {
-            this.y += this.moveSpeed / 1.5;
+            this.y += this.moveSpeed / 1.5 * delta;
         }
 
         // If you go up past

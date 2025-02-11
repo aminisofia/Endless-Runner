@@ -15,10 +15,10 @@ class Obstacle extends Phaser.GameObjects.Sprite {
 
     }
 
-    update(scene) {
+    update(scene, delta) {
         // this.z = 1;
-        this.x -= this.moveSpeed;
-        this.rotation += this.rotationSpeed;
+        this.x -= this.moveSpeed * delta;
+        this.rotation += this.rotationSpeed * delta;
         this.moveSpeed += .005;
 
         if(this.x < -this.height * this.scale) {

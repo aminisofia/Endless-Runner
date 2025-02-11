@@ -27,6 +27,7 @@ class Play extends Phaser.Scene {
 
         // SFXs
         this.load.audio('select', './sfx/select.mp3')
+        this.load.audio('fireWoosh', './sfx/fireWoosh.mp3')
         this.load.audio('moo', './sfx/cow.wav')
         this.load.audio('crash', './sfx/crash.mp3')
         this.load.audio('bg', './sfx/bg.mp3')
@@ -44,7 +45,10 @@ class Play extends Phaser.Scene {
     }
 
     create() {
-        
+        this.fireWoosh = this.sound.add('fireWoosh');
+        this.fireWoosh.play();
+        this.fireWoosh.setRate(0);
+
         this.select = this.sound.add('select');
         this.anims.create({
             key: 'sway',
@@ -53,7 +57,6 @@ class Play extends Phaser.Scene {
             repeat: -1,
             delay: 100
         })
-
         this.backgroundSpeed = 50;
         this.background = this.add.tileSprite(0, 0, this.sys.game.canvas.width, this.sys.game.canvas.height, 'background').setOrigin(0, 0);
         this.noise = this.add.tileSprite(0, 0, this.sys.game.canvas.width, this.sys.game.canvas.height, 'noise').setOrigin(0, 0).setAlpha(.5).setScale(5);
@@ -116,17 +119,21 @@ class Play extends Phaser.Scene {
        
     }
 
-    update() {
+    update(time, delta) {
+
+        delta /= 16;
 
         if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
             this.select.play();
             this.bg.stop();
+            this.fireWoosh.stop();
             this.scene.start('menuScene');
         }
 
         if (Phaser.Input.Keyboard.JustDown(keyRESET)) {
             this.select.play();
             this.bg.stop();
+            this.fireWoosh.stop();
             this.scene.start('playScene');
         }
 
@@ -136,35 +143,38 @@ class Play extends Phaser.Scene {
             this.backgroundSpeed += .005;
         }
 
-        this.balloon.update(this);
+        this.balloon.update(this, delta);
 
         if(this.gameOver >= 2) {
             this.end.alpha = 1;
             this.bg.stop();
+            this.fireWoosh.setRate(1);
+
             this.balloon.setTexture('balloonDeath');     
 
-            // particle effect explode
             const emitter = this.add.particles(0, 0, 'fire', {
-                lifespan: { min: 600, max: 800 },
-                speed: { min: 50, max: 100 },
-                // angle: { min: -30, max: 30 },
-                scale: { start: 2, end: 1 },
-                alpha: { start: 1, end: 0 },
+                lifespan: { min: 400, max: 600 },
+                speed: { min: 40, max: 80 },
+                scale: { start: 1.5, end: 0.5 },
+                alpha: { start: 0.8, end: 0 },
                 blendMode: 'ADD',
-                frequency: 50,
-                gravityY: -50,
-                quantity: 2,
-                rotate: { min: -180, max: 180 },
-                tint: [ 0xff7f00, 0xff5500, 0xff3300, 0xff0000 ],
+                frequency: 100,
+                gravityY: -40,
+                quantity: 1,
+                rotate: { min: -90, max: 90 },
+                tint: [ 0xff7f00, 0xff3300 ],
+                emitZone: { type: 'edge', source: new Phaser.Geom.Circle(0, 0, 10), quantity: 32 }
             });
             
             emitter.startFollow(this.balloon, 0, -25);
             
-            
-        } 
+
+        } else {
+            // this.fireWoosh.stop();
+        }
 
         for(let obstacle of this.obstacles) {
-            obstacle.update(this);
+            obstacle.update(this, delta);
 
             if(this.balloon.x > obstacle.x && obstacle.canHurt === true && obstacle.canPoint === false && this. gameOver < 2) {
                 this.p1Score += 1;
