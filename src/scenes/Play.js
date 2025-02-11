@@ -138,8 +138,8 @@ class Play extends Phaser.Scene {
         }
 
         if (this.backgroundSpeed < 60) {
-            this.background.tilePositionX += this.backgroundSpeed;
-            this.noise.tilePositionX += this.backgroundSpeed;
+            this.background.tilePositionX += this.backgroundSpeed * delta;
+            this.noise.tilePositionX += this.backgroundSpeed * delta;
             this.backgroundSpeed += .005;
         }
 
