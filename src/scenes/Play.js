@@ -166,14 +166,14 @@ class Play extends Phaser.Scene {
         for(let obstacle of this.obstacles) {
             obstacle.update(this);
 
-            if(this.balloon.x > obstacle.x && obstacle.canHurt === true && obstacle.canPoint === false) {
+            if(this.balloon.x > obstacle.x && obstacle.canHurt === true && obstacle.canPoint === false && this. gameOver < 2) {
                 this.p1Score += 1;
                 this.scoreLeft.text = this.p1Score;    
                 obstacle.canPoint = true;
             }
         
 
-            if (obstacle.canHurt && this.checkCollision(this.balloon, obstacle)) {
+            if (obstacle.canHurt && this.checkCollision(this.balloon, obstacle) && this.gameOver < 2) {
                 this.p1Score -= 1;
                 this.gameOver += 1;
                 this.sound.play('crash')
