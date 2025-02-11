@@ -10,7 +10,7 @@ config = {
     type: Phaser.AUTO,
     width: 640 * 1.2,
     height: 480 * 1.2,
-    scene: [Menu, Credits, Play],
+    scene: [Load, Menu, Credits, Play],
     pixelArt: true,
 }
 
@@ -18,5 +18,8 @@ config = {
 let game = new Phaser.Game(config);
 // set UI sizes
 let borderUISize = game.config.height / 20;
-
+let centerY = game.config.height /2;
+let centerX = game.config.width /2;
+let w = game.config.width;
+let h = game.config.height;
 let keyRESET, keyLEFT, keyUP, keySPACE; 

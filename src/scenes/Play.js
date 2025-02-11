@@ -5,43 +5,6 @@ class Play extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('end', './aesprite/gameOver.png');
-        this.load.image('balloonDeath', './aesprite/balloonDeath.png')
-        this.load.image('fire', './aesprite/fire.png');
-
-        this.load.image('noise', './aesprite/noisebg4.png');
-        this.load.image('balloon', './aesprite/balloon.png');
-        this.load.image('background', './aesprite/background.png')
-        this.load.image('cow', './aesprite/cow.png')
-        this.load.image('bra', './aesprite/bra.png')
-
-        this.load.image('particle', './aesprite/particle.png')
-        this.load.image('particle2', './aesprite/particle2.png')
-        this.load.image('smallLeaf', './aesprite/smallLeaf.png')
-        this.load.image('bigLeaf', './aesprite/bigLeaf.png')
-        this.load.image('particleLight', './aesprite/particleLight.png')
-        this.load.image('house', './aesprite/house.png');
-        this.load.font('gamer', './fonts/Retro_Gaming.ttf');
-
-
-
-        // SFXs
-        this.load.audio('select', './sfx/select.mp3')
-        this.load.audio('fireWoosh', './sfx/fireWoosh.mp3')
-        this.load.audio('moo', './sfx/cow.wav')
-        this.load.audio('crash', './sfx/crash.mp3')
-        this.load.audio('bg', './sfx/bg.mp3')
-
-
-         // load spritesheet
-         this.load.spritesheet('balloonSway', './aesprite/balloon-Sheet.png', {
-            frameWidth: 21,
-            frameHeight: 34,
-            startFrame: 0,
-            endFrame: 1
-        })
-
-
     }
 
     create() {
@@ -50,13 +13,7 @@ class Play extends Phaser.Scene {
         this.fireWoosh.setRate(0);
 
         this.select = this.sound.add('select');
-        this.anims.create({
-            key: 'sway',
-            frames: this.anims.generateFrameNumbers('balloonSway', { start: 0, end: 1, first: 0}),
-            frameRate: 2,
-            repeat: -1,
-            delay: 100
-        })
+        
         this.backgroundSpeed = 50;
         this.background = this.add.tileSprite(0, 0, this.sys.game.canvas.width, this.sys.game.canvas.height, 'background').setOrigin(0, 0);
         this.noise = this.add.tileSprite(0, 0, this.sys.game.canvas.width, this.sys.game.canvas.height, 'noise').setOrigin(0, 0).setAlpha(.5).setScale(5);
