@@ -55,6 +55,24 @@ class Load extends Phaser.Scene {
     }
 
     create(){
+   
+
+
+        
+        const canvas = document.querySelector('canvas');
+        window.addEventListener('resize', resizeCanvas, false);
+  
+        const scene = this;
+  
+        function resizeCanvas() {        
+  
+          const scaleW = window.innerWidth / scene.sys.game.config.width;
+          const scaleH = window.innerHeight / scene.sys.game.config.height;
+  
+          canvas.style.scale = Math.min(scaleW, scaleH);
+        }
+        
+        resizeCanvas();
         this.scene.start('menuScene');
 
         this.anims.create({
